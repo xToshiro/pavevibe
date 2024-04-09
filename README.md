@@ -37,7 +37,7 @@ One of the key configurable parameters in the PaveVibe project is the sampling r
 
 This diagram illustrates the setup required for PaveVibe, showing connections between the ESP32, accelerometer, and GPS module.
 
-### Data Visualization
+## Data Visualization
 
 ![Data in QGIS](imagens/data_visualization_qgis.png)
 

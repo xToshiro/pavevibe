@@ -21,6 +21,16 @@ To get started with PaveVibe, follow these steps:
 3. **Data Collection:** Begin collecting pavement data. Ensure GPS Logger is running on your smartphone to gather GPS data simultaneously.
 4. **Data Processing:** Use the provided Jupyter Notebooks to merge and filter the collected data.
 
+## Configuration
+
+The PaveVibe project allows for certain configurations to be adjusted to suit specific requirements. These configurations are set in the ESP32 code, found in the `/PaveVibe` directory.
+
+### Sampling Rate
+
+One of the key configurable parameters in the PaveVibe project is the sampling rate, which dictates how frequently the device collects data from the accelerometer and GPS. By default, this is set to:
+
+`const int amostrasPorSegundo` = `10`; // Samples per second
+
 ### Circuit Diagram
 
 ![Circuit Diagram](imagens/circuit_diagram.png)

@@ -1,6 +1,10 @@
 # PaveVibe
 
-PaveVibe is an innovative project designed to measure the quality of pavement surfaces using accelerometer and GPS data. Utilizing an ESP32 microcontroller, PaveVibe collects precise movement and location data, enabling detailed analysis of pavement conditions.
+PaveVibe is an innovative project designed to measure the quality of pavement surfaces and identify defects in a georeferenced manner using accelerometer and GPS data. By leveraging the capabilities of an ESP32 microcontroller, PaveVibe collects precise movement and location data, enabling detailed analysis of pavement conditions and the pinpointing of areas in need of maintenance.
+
+## Project Objective
+
+The main objective of PaveVibe is to create a portable, efficient device that can detect and record pavement defects with precise geolocation information. This allows for a comprehensive mapping of pavement quality over large areas, providing valuable data for maintenance planning and infrastructure improvement efforts.
 
 ## Features
 

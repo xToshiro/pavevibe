@@ -29,7 +29,9 @@ The PaveVibe project allows for certain configurations to be adjusted to suit sp
 
 One of the key configurable parameters in the PaveVibe project is the sampling rate, which dictates how frequently the device collects data from the accelerometer and GPS. By default, this is set to:
 
-`const int amostrasPorSegundo` = `10`; // Samples per second
+```plaintext
+const int amostrasPorSegundo = 10; // Samples per second
+```
 
 ### Circuit Diagram
 
@@ -37,17 +39,34 @@ One of the key configurable parameters in the PaveVibe project is the sampling r
 
 This diagram illustrates the setup required for PaveVibe, showing connections between the ESP32, accelerometer, and GPS module.
 
+### Internal Organization
+
+![Internal Organization](imagens/organi.png)
+
+This image shows the internal organization of the components within PaveVibe.
+
+### Final Project Version
+
+![Final Project Version](imagens/final.png)
+
+This image displays the final version of the PaveVibe project in its current state.
+
 ## Data Visualization
 
 ![Data in QGIS](imagens/data_visualization_qgis.png)
 
 A representation of how pavement quality data can be visualized using QGIS, offering insights into pavement conditions across different locations.
 
+## 3D Printable Case
+
+The `PaveVibe` project includes a 3D printable case for the device, which can be found in the `3D files` directory as a `.f3d` file. This case is designed to protect the device and integrate all components effectively.
+
 ## Repository Structure
 
 - `/PaveVibe`: Contains the ESP32 code for data collection.
 - `tratamento e merge.ipynb`: Jupyter Notebook for merging and preprocessing collected data.
 - `Filtros_SMA_Butterworth_COMP.ipynb`: Notebook for applying SMA and Butterworth filters to accelerometer data.
+- `/3D files`: Contains the `.f3d` file for printing the case in 3D.
 
 ## License
 

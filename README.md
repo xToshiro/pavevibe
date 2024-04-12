@@ -35,7 +35,7 @@ const int amostrasPorSegundo = 10; // Samples per second
 
 ### Circuit Diagram
 
-![Circuit Diagram](imagens/circuit_diagram.jpg)
+![Circuit Diagram](imagens/circuit_diagram.png)
 
 This diagram illustrates the setup required for PaveVibe, showing connections between the ESP32, accelerometer, and GPS module.
 
@@ -47,7 +47,7 @@ This image shows the internal organization of the components within PaveVibe.
 
 ### Final Project Version
 
-![Final Project Version](imagens/final.png)
+![Final Project Version](imagens/final.jpg)
 
 This image displays the final version of the PaveVibe project in its current state.
 

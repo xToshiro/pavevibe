@@ -9,21 +9,33 @@ String getFileName() {
 // Check if the data file exists on the SD card and create it with a header if it does not or is empty
 void checkSDFile() {
   String fileName = getFileName();  // Get the current file name based on the RTC date and time
-  File file = SD.open(fileName.c_str(), FILE_WRITE);  // Open the file in write mode to create if it does not exist
+  Serial.print("Checking file: "); Serial.println(fileName);
 
+  // Tenta abrir o arquivo apenas para leitura para verificar sua existência
+  File file = SD.open(fileName.c_str(), FILE_READ);
   if (!file) {
-    Serial.println("File doesn't exist");
-    Serial.println("Creating file...");
-    file = SD.open(fileName.c_str(), FILE_WRITE); // Ensure file is opened for writing after creation
-    writeFile(SD, fileName.c_str(), "Date, Time, GPSDate, GPSTime, Latitude, Longitude, Altitude, Speed, GPSUpdate, AccX, AccY, AccZ, GyroX, GyroY, GyroZ, SampleIndex\r\n");
-  } else if (file.size() == 0) {
-    Serial.println("File exists but is empty");
-    writeFile(SD, fileName.c_str(), "Date, Time, GPSDate, GPSTime, Latitude, Longitude, Altitude, Speed, GPSUpdate, AccX, AccY, AccZ, GyroX, GyroY, GyroZ, SampleIndex\r\n");
+    Serial.println("File does not exist or cannot be opened for reading.");
+    file = SD.open(fileName.c_str(), FILE_WRITE);  // Cria um novo arquivo para escrita
+    if (file) {
+      Serial.println("File created. Writing header...");
+      const char *header = "Date, Time, GPSDate, GPSTime, Latitude, Longitude, Altitude, Speed, GPSUpdate, AccX, AccY, AccZ, GyroX, GyroY, GyroZ, SampleIndex\r\n";
+      if (file.print(header)) {
+        Serial.println("Header written successfully.");
+      } else {
+        Serial.println("Failed to write header.");
+        ErrorLoopIndicator();  // Indicate an error in a non-recoverable loop
+      }
+      file.close();
+    } else {
+      Serial.println("Failed to create file.");
+      ErrorLoopIndicator();  // Indicate an error in a non-recoverable loop
+    }
   } else {
-    Serial.println("File already exists");
+    Serial.println("File exists, no need to create.");
+    file.close();
   }
-  file.close(); // Close the file to ensure data integrity
 }
+
 
 
 // Initialize the SD card and check its status and size

@@ -1,48 +1,46 @@
-#include <MPU9250_asukiaaa.h>  // Include the library for MPU9250 sensor
-#include <Wire.h>             // Include the Wire library for I2C communication
-#include <TinyGPSPlus.h>      // Include the TinyGPS++ library for GPS functionalities
-#include <ESP32Time.h>        // Include ESP32Time library for managing time
-#include <SD.h>               // Include SD library for SD card operations
-#include <SPI.h>              // Include SPI library for SPI communication protocols
+#include <ESP32Time.h>       // For managing time on ESP32
+#include <MPU9250_asukiaaa.h> // For MPU9250 sensor interface
+#include <SD.h>              // For SD card operations
+#include <SPI.h>             // For SPI communication protocols
+#include <TinyGPSPlus.h>     // For GPS functionalities
+#include <Wire.h>            // For I2C communication
 
-// If ESP32 I2C hardware abstraction layer is included, define pin settings and frequency
-#define SDA_PIN 21            // SDA pin for I2C communication
-#define SCL_PIN 22            // SCL pin for I2C communication
-#define I2C_Freq 400000       // Set I2C frequency to 400kHz for faster data transfer
+constexpr int SDA_PIN = 21;        // SDA pin for I2C communication
+constexpr int SCL_PIN = 22;        // SCL pin for I2C communication
+constexpr unsigned long I2C_Freq = 400000; // I2C frequency in Hz
 
-MPU9250_asukiaaa mySensor; // Object for interfacing with the MPU9250 sensor
+MPU9250_asukiaaa mySensor; // Sensor interface object
 
-// Definitions for controlling sample rate
-const int samplesPerSecond = 10;                       // Define how many samples per second to take
-unsigned long lastSampleTime = 0;                      // Tracks the time when the last sample was taken
-const long sampleInterval = 1000 / samplesPerSecond;   // Compute sample interval in milliseconds
-int sampleIndex = 0;                                   // Index to keep track of sample count
+// Sampling configuration
+constexpr int samplesPerSecond = 10;
+unsigned long lastSampleTime = 0; // Time of the last sample
+constexpr long sampleInterval = 1000 / samplesPerSecond;
+int sampleIndex = 0; // Sample counter
 
-#define LED_BUILTIN 2        // Pin number for built-in LED on ESP32
+constexpr int LED_BUILTIN = 2;    // Built-in LED pin on ESP32
+ESP32Time rtc(-10800);            // ESP32Time object with GMT-3 offset
+constexpr int GPS_BAUDRATE = 9600; // Baud rate for GPS module
+TinyGPSPlus gps;                  // GPS data parser
+String dataMessage;               // Data message storage for SD writing
+File dataFile;                    // File object for SD operations
 
-ESP32Time rtc(-10800);       // Create an ESP32Time object with GMT-3 offset for local time
-#define GPS_BAUDRATE 9600    // GPS module baud rate (commonly used for UART communication with GPS)
-TinyGPSPlus gps;             // Object to parse and handle GPS data
-String dataMessage;          // String to store data messages for SD card writing
-File dataFile;               // File object to handle operations on the SD card
-
-// Structure to hold time data for RTC and GPS
+// Time data structure
 struct TimeData {
-  int day, month, year, hour, minute, second;  // Variables to store day, month, year, hour, minute, second
+  int day, month, year, hour, minute, second;
 } rtcTime, gpsTime;
 
-int gpsUpdate = 0;           // Flag to indicate whether GPS data has been updated
+int gpsUpdate = 0; // GPS data update flag
 
-char latitudeStr[15], longitudeStr[15];  // Strings to store latitude and longitude in human-readable form
-double gpsAltitude = 0;                  // Variable to store GPS altitude
-float gpsSpeed = 0;                      // Variable to store GPS speed
+char latitudeStr[15], longitudeStr[15]; // Human-readable latitude and longitude
+double gpsAltitude = 0;                 // GPS altitude
+float gpsSpeed = 0;                     // GPS speed
 
-// Structure for organizing sensor data
+// Sensor data structure
 struct SensorData {
-  float ax, ay, az;          // Accelerometer readings for X, Y, and Z axes
-  float gx, gy, gz;          // Gyroscope readings for X, Y, and Z axes
-  float aSqrt;               // Square root of sum of squares of accelerometer readings
-  float gxOffset, gyOffset, gzOffset = 0; // Offsets for gyroscope readings to adjust sensor drift
+  float ax, ay, az;          // Accelerometer readings
+  float gx, gy, gz;          // Gyroscope readings
+  float aSqrt;               // Square root of accelerometer sums
+  float gxOffset = 0, gyOffset = 0, gzOffset = 0; // Gyroscope offsets
 } sensorData;
 
 
@@ -247,19 +245,8 @@ void rtcSyncWithGps() {
       if (gps.encode(Serial2.read())) {
         delay(150); // Small delay may be necessary for some GPS modules to process data
         if (gps.date.isValid() && gps.time.isValid()) {
-          Serial.println("Good synchronization between RTC and GPS.");
-          Serial.print("GPS date&time: ");
-          // Print and set GPS date and time
-          Serial.print(gps.date.year()); Serial.print("-"); Serial.print(gps.date.month()); Serial.print("-"); Serial.print(gps.date.day()); Serial.print(" ");
-          Serial.print(gps.time.hour()); Serial.print(":"); Serial.print(gps.time.minute()); Serial.print(":"); Serial.println(gps.time.second());
-          
           // Set the RTC time based on GPS time
           rtc.setTime(gps.time.second(), gps.time.minute(), gps.time.hour(), gps.date.day(), (gps.date.month()), gps.date.year());
-          
-          // Print the synchronized RTC date and time
-          Serial.print("RTC date&time: "); Serial.println(rtc.getTime("%Y-%m-%d %H:%M:%S"));
-        } else {
-          //Serial.println("Waiting for date and time data!");
         }
       }
     }
@@ -268,5 +255,12 @@ void rtcSyncWithGps() {
       Serial.println("No valid gps data.");
     }
   }
+  Serial.println("Good synchronization between RTC and GPS.");
+  Serial.print("GPS date&time: ");
+  // Print and set GPS date and time
+  Serial.print(gps.date.year()); Serial.print("-"); Serial.print(gps.date.month()); Serial.print("-"); Serial.print(gps.date.day()); Serial.print(" ");
+  Serial.print(gps.time.hour()); Serial.print(":"); Serial.print(gps.time.minute()); Serial.print(":"); Serial.println(gps.time.second());
+  // Print the synchronized RTC date and time
+  Serial.print("RTC date&time: "); Serial.println(rtc.getTime("%Y-%m-%d %H:%M:%S"));
 }
 

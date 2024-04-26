@@ -8,6 +8,7 @@ String getFileName() {
 
 // Check if the data file exists on the SD card and create it with a header if it does not or is empty
 void checkSDFile() {
+  digitalWrite(LED_BUILTIN, HIGH);
   fileName = getFileName();  // Get the current file name based on the RTC date and time
   Serial.print("Checking file: "); Serial.println(fileName);
 
@@ -20,6 +21,8 @@ void checkSDFile() {
       Serial.println("File created. Writing header...");
       const char *header = "Date, Time, GPSDate, GPSTime, Latitude, Longitude, Altitude, Speed, GPSUpdate, AccX, AccY, AccZ, GyroX, GyroY, GyroZ, SampleIndex\r\n";
       if (file.print(header)) {
+        //blinkLed(6);
+        //digitalWrite(LED_BUILTIN, LOW);
         Serial.println("Header written successfully.");
       } else {
         Serial.println("Failed to write header.");
@@ -33,6 +36,9 @@ void checkSDFile() {
   } else {
     Serial.println("File exists, no need to create.");
     file.close();
+    
+    blinkLed(6);
+    digitalWrite(LED_BUILTIN, LOW);
   }
 }
 

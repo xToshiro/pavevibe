@@ -9,5 +9,6 @@ constexpr long sampleInterval = 1000 / samplesPerSecond;
 int sampleIndex = 0; // Sample counter
 
 constexpr int LED_BUILTIN = 2;    // Built-in LED pin on ESP32
+constexpr int LED_GREEN = 15;    // LED indicate gps active
 ESP32Time rtc(-10800);            // ESP32Time object with GMT-3 offset
 constexpr int GPS_BAUDRATE = 9600; // Baud rate for GPS module

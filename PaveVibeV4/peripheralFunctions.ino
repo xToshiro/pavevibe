@@ -9,19 +9,23 @@ void updateMPUdata() {
   // Update accelerometer values with the latest readings
   if (mySensor.accelUpdate() == 0) {
     sensorData.ax = mySensor.accelX(); sensorData.ay = mySensor.accelY(); sensorData.az = mySensor.accelZ(); sensorData.aSqrt = mySensor.accelSqrt(); // Square root of sum of squares of accelerometer readings
+  } else {
+    digitalWrite(LED_BUILTIN, LOW); // Turn off the LED if a valid location is obtained
   }
   // Apply offsets to gyroscope values and update
   if (mySensor.gyroUpdate() == 0) {
     sensorData.gx = mySensor.gyroX() - sensorData.gxOffset; sensorData.gy = mySensor.gyroY() - sensorData.gyOffset; sensorData.gz = mySensor.gyroZ() - sensorData.gzOffset;
+  } else {
+    digitalWrite(LED_BUILTIN, LOW); // Turn off the LED if a valid location is obtained
   }
 }
 
 void blinkLed(int count) {
   // Blink the built-in LED a specified number of times
   for (int i = 0; i < count; i++) {
-    digitalWrite(LED_BUILTIN, HIGH); // Turn the LED on
+    digitalWrite(LED_GREEN, HIGH); // Turn the LED on
     delay(500); // Wait for half a second
-    digitalWrite(LED_BUILTIN, LOW); // Turn the LED off
+    digitalWrite(LED_GREEN, LOW); // Turn the LED off
     delay(500); // Wait for another half second
   }
 }
@@ -44,6 +48,7 @@ void clearSerialScreen() {
 }
 
 void syncGps() {
+  digitalWrite(LED_BUILTIN, HIGH);
   // Synchronize the internal RTC with GPS time
   Serial.println(F("Initiating synchronization of the internal RTC with the GPS!"));
   delay(500); // Short delay before starting synchronization
@@ -89,6 +94,7 @@ void syncGps() {
     }
   }
   blinkLed(4); // Blink LED four times to indicate setup completion
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void updateSampleIndex() {
@@ -107,9 +113,9 @@ void updateGpsData() {
     if (Serial2.available() > 0) {
       // Try to parse GPS data
       if (gps.encode(Serial2.read())) {
+        digitalWrite(LED_GREEN, !digitalRead(LED_GREEN)); // Alterna o estado do LED
         // Check if the location data is valid
         if (gps.location.isValid()) {
-          digitalWrite(LED_BUILTIN, LOW); // Turn off the LED if a valid location is obtained
           // Convert latitude and longitude to string with fixed format
           dtostrf(gps.location.lat(), 12, 8, latitudeStr); 
           dtostrf(gps.location.lng(), 12, 8, longitudeStr);
@@ -133,6 +139,11 @@ void updateGpsData() {
 }
 
 void initProgram() {
+
+  
+  pinMode(LED_BUILTIN, OUTPUT); // Set the built-in LED pin as an output
+  digitalWrite(LED_BUILTIN, HIGH);
+
   Serial.begin(115200); // Initialize serial communication at 115200 bps
   Serial2.begin(GPS_BAUDRATE); // Initialize GPS module serial communication
   delay(2000);
@@ -140,18 +151,22 @@ void initProgram() {
   // Display startup message
   Serial.println(F("PaveVibe - Coded by Jairo Ivo"));
   while (!Serial); // Wait for the serial port to connect, necessary for native USB
-
-  pinMode(LED_BUILTIN, OUTPUT); // Set the built-in LED pin as an output
-
+  pinMode(LED_GREEN, OUTPUT);
   // Initialize I2C communication for the MPU9250 sensor
   Wire.begin(SDA_PIN, SCL_PIN, I2C_Freq); // Start I2C with custom pins and frequency
   mySensor.setWire(&Wire); // Assign Wire object to the sensor for communication
+  
+  blinkLed(1);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
 }
 
 void checkAndCalibrateMPU() {
+  digitalWrite(LED_BUILTIN, HIGH);
    // Check for sensor presence on the I2C bus at address 0x68
   Wire.beginTransmission(0x68);
   if (Wire.endTransmission() != 0) {
+    Serial.println(F("Accelerometer not connected, check wiring!"));
     ErrorLoopIndicator(); // Execute error handling routine if sensor is not detected
   } else {
     mySensor.beginAccel(); // Initialize the accelerometer
@@ -164,6 +179,8 @@ void checkAndCalibrateMPU() {
 
     calculateGyroOffsets(); // Calculate gyroscope offsets for calibration
     blinkLed(2); // Blink LED twice to indicate successful sensor setup
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(1000);
   }
 }
 

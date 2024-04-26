@@ -4,7 +4,7 @@
 #include <SPI.h>             // For SPI communication protocols
 #include <TinyGPSPlus.h>     // For GPS functionalities
 #include <Wire.h>            // For I2C communication
-#include "config.h"          // Configuration file
+#include "configSetup.h"          // Configuration file
 
 MPU9250_asukiaaa mySensor; // Sensor interface object
 TinyGPSPlus gps;                  // GPS data parser
